@@ -114,7 +114,6 @@ let search_flight = async (form_data) => {
 
         //convert thoigiandi + thoigianden
         thoigiandi_chuyenbay = new Date(list_ChuyenBaySuit[i].ThoiGianDi);
-        console.log(thoigiandi_chuyenbay);
         thoigianden_chuyenbay = add_minutes(thoigiandi_chuyenbay, list_ChuyenBaySuit[i].ThoiGianBay);
         //thoigian di
         list_ChuyenBaySuit[i].ThoiGianDi = {
@@ -322,7 +321,6 @@ let search_flight = async (form_data) => {
             list_ChuyenBaySuit[i].GiaVe = list_ChuyenBaySuit[i].GiaVe * parseFloat(heso_hangghe.HeSo);
         }
     }
-    console.log(list_ChuyenBaySuit[0].ThoiGianDen);
     return list_ChuyenBaySuit;
 };
 
@@ -366,7 +364,7 @@ let getMinDiff = function (startDate, endDate) {
 let GetInfoAllFlights = async (req, res) => {
     try {
         let Chuyenbays = await db.ChuyenBay.findAll({
-            attributes: { exclude: ['createdAt', 'updatedAt', 'TrangThai', 'ThoiGianBay', 'DoanhThu'] },
+            attributes: { exclude: ['createdAt', 'updatedAt', 'ThoiGianBay', 'DoanhThu'] },
             where: {
                 // [Op.gt]: {
                 //     NgayGio: now.yyyymmdd(),
@@ -388,16 +386,20 @@ let GetInfoAllFlights = async (req, res) => {
                     raw: true,
                 },
             );
-            Chuyenbays[i].SoDiemDung = sodiemdung[0].SoDiemDung;
+
+            if (sodiemdung.length === 0) Chuyenbays[i].SoDiemDung = 0;
+            else Chuyenbays[i].SoDiemDung = sodiemdung[0].SoDiemDung;
 
             //add info sanbay
+
+            Chuyenbays[i].MaHienThi =
+                Chuyenbays[i].MaSanBayDi + '-' + Chuyenbays[i].MaSanBayDen + '-' + Chuyenbays[i].MaChuyenBay;
             Chuyenbays[i].SanBayDi = await getInfoSanBay(Chuyenbays[i].MaSanBayDi);
             Chuyenbays[i].SanBayDen = await getInfoSanBay(Chuyenbays[i].MaSanBayDen);
 
             //tinh so ghe trong+ tong ghe
-
             let soghe = await db.sequelize.query(
-                ' SELECT SUM(TongVe) as TongGhe, SUM(VeDaBan) as TongVeBan FROM `chitiethangve` WHERE MaChuyenBay = :machuyenbay GROUP BY MaChuyenBay',
+                ' SELECT SUM(TongVe) as TongGhe, SUM(VeDaBan) as TongVeBan FROM `chitiethangve` WHERE MaChuyenBay = :machuyenbay GROUP BY MaChuyenBay ',
                 {
                     replacements: {
                         machuyenbay: Chuyenbays[i].MaChuyenBay,
@@ -406,12 +408,41 @@ let GetInfoAllFlights = async (req, res) => {
                     raw: true,
                 },
             );
-            Chuyenbays[i].GheTrong = parseInt(soghe[0].TongGhe) - parseInt(soghe[0].TongVeBan);
-            Chuyenbays[i].TongGhe = parseInt(soghe[0].TongGhe);
+            if (soghe.length === 0) {
+                Chuyenbays[i].TongGhe = 0;
+                Chuyenbays[i].GheTrong = 0;
+            } else {
+                Chuyenbays[i].GheTrong = parseInt(soghe[0].TongGhe) - parseInt(soghe[0].TongVeBan);
+                Chuyenbays[i].TongGhe = parseInt(soghe[0].TongGhe);
+            }
+
+            //format KhoiHanh
+            let KhoiHanh = formatDateTime(Chuyenbays[i].NgayGio);
+            Chuyenbays[i].KhoiHanh = {
+                NgayDi: {
+                    Ngay: KhoiHanh.Ngay,
+                    Thang: KhoiHanh.Thang,
+                    Nam: KhoiHanh.Nam,
+                },
+                GioDi: {
+                    Gio: KhoiHanh.Gio,
+                    Phut: KhoiHanh.Phut,
+                },
+            };
+            delete Chuyenbays[i].NgayGio;
+
+            let HangGhe = await db.sequelize.query(
+                '  SELECT  chitiethangve.`MaHangGhe`, hangghe.TenHangGhe ,  hangghe.HeSo FROM `chitiethangve`, hangghe WHERE chitiethangve.MaHangGhe = hangghe.MaHangGhe AND MaChuyenBay = :machuyenbay ',
+                {
+                    replacements: {
+                        machuyenbay: Chuyenbays[i].MaChuyenBay,
+                    },
+                    type: QueryTypes.SELECT,
+                    raw: true,
+                },
+            );
+            Chuyenbays[i].HangGhe = HangGhe;
         }
-
-        console.log(Chuyenbays);
-
         return res.send(JSON.stringify(Chuyenbays));
     } catch (error) {
         console.log(error);
@@ -458,7 +489,7 @@ let getFlight = async (req, res) => {
         let maChuyenBay = req.body.MaChuyenBay;
         let maChuyenBayHienThi = req.body.MaChuyenBayHienThi;
         let Chuyenbay = await db.ChuyenBay.findOne({
-            attributes: { exclude: ['createdAt', 'updatedAt', 'TrangThai', 'DoanhThu'] },
+            attributes: { exclude: ['createdAt', 'updatedAt', 'DoanhThu'] },
             where: {
                 MaChuyenBay: maChuyenBay,
             },
@@ -516,7 +547,7 @@ let getFlight = async (req, res) => {
             HangVes[i].GiaTien = parseInt(Chuyenbay.GiaVeCoBan) * parseFloat(HangVes[i].HeSo);
 
             let vedadat = await db.sequelize.query(
-                '  SELECT MaVe, ve.MaHK, hanhkhach.HoTen, `MaVe`, ve.MaMocHanhLy as MocHanhLy,GioiTinh ,`GiaVe`, NgaySinh, MaHoaDon FROM `ve` , mochanhly , hanhkhach WHERE ve.MaMocHanhLy = mochanhly.MaMocHanhLy AND ve.MaHK = hanhkhach.MaHK AND MaCTVe = :mactve ',
+                '  SELECT MaVe, ve.MaHK, hanhkhach.HoTen, SoKgToiDa as MocHanhLy,GioiTinh ,`GiaVe`, NgaySinh, MaHoaDon, TenHangGhe as TenHangVe FROM `ve` , mochanhly , hanhkhach, chitiethangve, hangghe WHERE ve.MaMocHanhLy = mochanhly.MaMocHanhLy AND ve.MaHK = hanhkhach.MaHK AND ve.MaCTVe = chitiethangve.MaCTVe AND chitiethangve.MaHangGhe = hangghe.MaHangGhe AND ve.MaCTVe = :mactve ',
                 {
                     replacements: {
                         mactve: HangVes[i].MaCTVe,
@@ -553,7 +584,6 @@ let getFlight = async (req, res) => {
                 delete NguoiLienHe.NgayGioThanhToan;
 
                 vedadat[j].NguoiLienHe = NguoiLienHe;
-                console.log();
 
                 if (ngaygioThanhToan) {
                     let ngaydat = formatDateTime(ngaygioThanhToan);
@@ -582,7 +612,7 @@ let getFlight = async (req, res) => {
                     };
                 }
 
-                vedadat[j].MaVeHienThi = maChuyenBayHienThi + vedadat[j].MaVe;
+                vedadat[j].MaVeHienThi = maChuyenBayHienThi + '-' + vedadat[j].MaVe;
 
                 delete vedadat[j].MaHK;
                 delete vedadat[j].GioiTinh;
@@ -597,7 +627,7 @@ let getFlight = async (req, res) => {
         Chuyenbay.SanBayDen = await getInfoSanBay(Chuyenbay.MaSanBayDen);
 
         let thoiGianDi = formatDateTime(Chuyenbay.NgayGio);
-        (Chuyenbay.ThoiGianDi = {
+        Chuyenbay.ThoiGianDi = {
             GioDi: {
                 Gio: thoiGianDi.Gio,
                 Phut: thoiGianDi.Phut,
@@ -607,12 +637,12 @@ let getFlight = async (req, res) => {
                 Thang: thoiGianDi.Thang,
                 Nam: thoiGianDi.Nam,
             },
-        }),
-            delete Chuyenbay.NgayGio;
+        };
+
+        delete Chuyenbay.NgayGio;
         delete Chuyenbay.MaSanBayDi;
         delete Chuyenbay.MaSanBayDen;
 
-        console.log(Chuyenbay);
         return res.send(JSON.stringify(Chuyenbay));
     } catch (error) {
         console.log(error);
@@ -627,7 +657,7 @@ let getFlight = async (req, res) => {
 //     MaSanBayDi: '',
 //     MaSanBayDen: '',
 //     MaHangGhe: '',
-//     GheTrong: '',
+//     GheTrong: -1,
 //     NgayKhoiHanh: {Ngay: , Thang: , Nam:},
 //     GioKhoiHanh: {Gio: , Phut:},
 //     GiaVeCoBan: -1,
@@ -665,8 +695,6 @@ let getFlight = async (req, res) => {
 let filterFlight = async (req, res) => {
     try {
         let form_data = { ...req.body };
-
-        form_data.GioKhoiHanh = JSON.parse(form_data.GioKhoiHanh);
         let chuyenbays;
         if (typeof form_data.GioKhoiHanh.Gio !== 'undefined' && parseInt(form_data.GioKhoiHanh.Gio) !== -1) {
             //
@@ -733,11 +761,10 @@ let filterFlight = async (req, res) => {
 
         if (typeof form_data.GheTrong !== 'undefined' && parseInt(form_data.GheTrong) !== -1) {
             chuyenbays = chuyenbays.filter((item, index) => {
-                return item.GheTrong <= parseInt(form_data.GheTrong);
+                return item.GheTrong >= parseInt(form_data.GheTrong);
             });
         }
 
-        form_data.NgayKhoiHanh = JSON.parse(form_data.NgayKhoiHanh);
         if (typeof form_data.NgayKhoiHanh.Ngay !== 'undefined' && parseInt(form_data.NgayKhoiHanh.Ngay) !== -1) {
             let strDate =
                 form_data.NgayKhoiHanh.Nam + '-' + form_data.NgayKhoiHanh.Thang + '-' + form_data.NgayKhoiHanh.Ngay;
@@ -763,10 +790,10 @@ let filterFlight = async (req, res) => {
                 } else {
                     chuyenbays[i].MaHangGhe = '';
                 }
-                chuyenbays = chuyenbays.filter((item, index) => {
-                    return item.MaHangGhe !== '';
-                });
             }
+            chuyenbays = chuyenbays.filter((item, index) => {
+                return item.MaHangGhe !== '';
+            });
         }
         //#endregion
 
@@ -819,7 +846,6 @@ let filterFlight = async (req, res) => {
             delete chuyenbays[i].ThoiGianBay;
         }
         //#endregion
-        // console.log(chuyenbays);
         return res.send(JSON.stringify(chuyenbays));
     } catch (error) {
         console.log(error);

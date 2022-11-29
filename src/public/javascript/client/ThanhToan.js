@@ -26,6 +26,7 @@ function GetPackageBooing_fromSV() {
     });
 }
 if (!PackageBooking) GetPackageBooing_fromSV();
+
 window.addEventListener('pageshow', function (event) {
     var historyTraversal =
         event.persisted || (typeof window.performance != 'undefined' && window.performance.navigation.type === 2);
@@ -50,9 +51,12 @@ document.getElementById('ThanhToan').addEventListener('click', () => {
         data: data_send,
     }).then((res) => {
         console.log(res.data);
+        closeLoader();
         if (res.data === 'Success') alert('Thanh toán thành công');
         else alert('thanh toán thất bại');
-    });
 
-    closeLoader();
+        var home_form = document.forms['home_form'];
+        home_form.action = '/';
+        home_form.submit();
+    });
 });
