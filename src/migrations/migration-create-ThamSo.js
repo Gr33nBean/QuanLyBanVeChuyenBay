@@ -11,9 +11,6 @@ module.exports = {
             GiaTri: {
                 type: Sequelize.INTEGER,
             },
-            TenHienThi: {
-                type: Sequelize.STRING,
-            },
             createdAt: {
                 allowNull: false,
                 type: Sequelize.DATE,

@@ -55,8 +55,7 @@
                                 type='text'
                                 class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                                 id='SanBayDi'
-                                masanbay=''
-                                value='{{this.Flight_Edit.SanBayDi.TenSanBay}}'
+                                value='Tân Sơn Nhất'
                                 disabled
                             />
                         </div>
@@ -71,8 +70,7 @@
                                 type='text'
                                 class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                                 id='SanBayDen'
-                                masanbay=''
-                                value='{{this.Flight_Edit.SanBayDen.TenSanBay}}'
+                                value='Nội Bài'
                                 disabled
                             />
                         </div>
@@ -88,7 +86,6 @@
                                 class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                                 id='TrangThai'
                                 value='Chưa khởi hành'
-                                giatri=''
                                 disabled
                             />
                         </div>
@@ -186,7 +183,7 @@
                 <div id='DiemDung_Container' class='px-3'>
 
                     {{! Điểm dừng item }}
-                    <div class='DiemDung_Item row mb-3 align-items-center d-none' index='0'>
+                    <div class='DiemDung_Item row mb-3 align-items-center d-none' index=''>
 
                         {{! Thứ tự }}
                         <div class='col-1'>
@@ -195,7 +192,7 @@
                                 style='height: 36px;'
                                 type='text'
                                 class='DiemDung_Item_ThuTu form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary text-center'
-                                value='0'
+                                value='1'
                                 disabled
                             />
                         </div>
@@ -213,38 +210,46 @@
                                     aria-expanded='false'
                                     placeholder='Sân bay dừng'
                                     masanbay=''
-                                    index='0'
                                 />
                                 {{! Drop down }}
                                 <ul
                                     style='width: 350px; height: 400px;'
                                     class='DiemDung_Item_SanBayDung_ul list-unstyled custom-font p14-S dropdown-menu custom-font p20-B shadow py-0 my-1 overflow-auto'
                                 >
-
+                                    {{! Dropdown header }}
+                                    <li
+                                        class='dropdown-header border border-1 border-top-0 border-end-0 border-start-0'
+                                    >
+                                        <div class='d-flex flex-column'>
+                                            <span
+                                                class='custom-font p12-S text-dark border-tertiary border-tertiary'
+                                            >Thành phố hoặc sân bay phổ biến</span>
+                                        </div>
+                                    </li>
                                     {{! Dropdown items }}
-                                    {{#each Flight_Edit.SanBays}}
-                                        <li
-                                            class='DiemDung_Item_SanBayDung_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
-                                        >
-                                            <div style='pointer-events:none;' class='d-flex flex-column'>
-                                                <span
-                                                    class='DiemDung_Item_SanBayDung_li_TinhThanh custom-font p14-S text-dark pb-1'
-                                                >{{this.TinhThanh}}</span>
-                                                <div class='d-flex flex-row'>
 
-                                                    <span
-                                                        class='DiemDung_Item_SanBayDung_li_MaSanBay custom-font p14-R text-tertiary me-1'
-                                                    >{{this.MaSanBay}}</span>
-                                                    <span class='custom-font p14-R text-tertiary me-1'>
-                                                        - Sân bay
-                                                    </span>
-                                                    <span
-                                                        class='DiemDung_Item_SanBayDung_li_TenSanBay custom-font p14-R text-tertiary'
-                                                    >{{this.TenSanBay}}</span>
-                                                </div>
+                                    <li
+                                        class='DiemDung_Item_SanBayDung_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
+                                    >
+                                        <div style='pointer-events:none;' class='d-flex flex-column'>
+                                            <span
+                                                class='DiemDung_Item_SanBayDung_li_TinhThanh custom-font p14-S text-dark pb-1'
+                                            >TP HCM</span>
+                                            <div class='d-flex flex-row'>
+
+                                                <span
+                                                    class='DiemDung_Item_SanBayDung_li_MaSanBay custom-font p14-R text-tertiary me-1'
+                                                >TSN</span>
+                                                <span class='custom-font p14-R text-tertiary me-1'>
+                                                    - Sân bay
+                                                </span>
+                                                <span
+                                                    class='DiemDung_Item_SanBayDung_li_TenSanBay custom-font p14-R text-tertiary'
+                                                >Tân Sơn Nhất</span>
                                             </div>
-                                        </li>
-                                    {{/each}}
+                                        </div>
+                                    </li>
+
                                 </ul>
                             </div>
                         </div>
@@ -255,7 +260,6 @@
                             <input
                                 style='height: 36px;'
                                 type='date'
-                                index='0'
                                 class='DiemDung_Item_NgayDen form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
@@ -266,7 +270,6 @@
                             <input
                                 style='height: 36px;'
                                 type='time'
-                                index='0'
                                 class='DiemDung_Item_GioDen form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
@@ -277,7 +280,6 @@
                             <input
                                 style='height: 36px;'
                                 type='number'
-                                index='0'
                                 class='DiemDung_Item_ThoiGianDung form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
@@ -288,7 +290,6 @@
                             <input
                                 style='height: 36px;'
                                 type='text'
-                                index='0'
                                 placeholder='Ghi chú'
                                 class='DiemDung_Item_GhiChu form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
@@ -298,7 +299,6 @@
                         <div class='col-1 px-0 text-center'>
                             <button
                                 style='margin-top:26px;'
-                                index='0'
                                 class='DiemDung_Item_Xoa btn border-0 bg-danger custom-boxshadow-focus-none custom-boxshadow-hover-secondary px-2 py-2 d-none'
                             >
                                 <span class='text-light custom-font p14-S'>Xóa</span>
@@ -306,7 +306,6 @@
 
                             <button
                                 style='margin-top:26px;'
-                                index='0'
                                 class='DiemDung_Item_Luu btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-primary d-none p-0'
                             >
                                 <i
@@ -317,7 +316,6 @@
 
                             <button
                                 style='margin-top:26px;'
-                                index='0'
                                 class='DiemDung_Item_Huy btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-secondary p-0 d-none'
                             >
                                 <i
@@ -382,21 +380,15 @@
                                     class='HangGhe_Item_MaHangVe_ul list-unstyled custom-font p14-S dropdown-menu custom-font p20-B shadow py-0 my-1 overflow-auto'
                                 >
                                     {{! Dropdown items }}
-                                    {{#each Flight_Edit.HangVes}}
-                                        <li
-                                            class='HangGhe_Item_MaHangVe_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
-                                        >
-                                            <div style='pointer-events:none;' class='d-flex flex-row'>
-                                                <span
-                                                    class='HangGhe_Item_MaHangVe_li_Ma custom-font p14-R text-dark me-1'
-                                                >{{this.MaHangGhe}}</span>
-                                                <span class='custom-font p14-S text-dark me-1'> - </span>
-                                                <span
-                                                    class='HangGhe_Item_MaHangVe_li_Ten custom-font p14-R text-dark'
-                                                >{{this.TenHangGhe}}</span>
-                                            </div>
-                                        </li>
-                                    {{/each}}
+
+                                    <li
+                                        class='HangGhe_Item_MaHangVe_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
+                                    >
+                                        <div style='pointer-events:none;' class='d-flex flex-row'>
+
+                                        </div>
+                                    </li>
+
                                 </ul>
                             </div>
                         </div>
@@ -500,8 +492,6 @@
     </div>
 
 </div>
-
-<div id='Flight_EditJS' Flight_EditJS='{{this.Flight_EditJS}}' class='d-none'></div>
 
 {{! Our js }}
 <script type='module' src='/javascript/staff/ChinhSuaChuyenBay.js'>
