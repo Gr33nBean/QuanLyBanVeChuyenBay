@@ -283,7 +283,7 @@ let ThanhToan = async (req, res) => {
 
         let pdf = await pdfController.generateHoaDonPdf();
         if (pdf.status === 'ok') {
-            Mailer.sendMail(
+            await Mailer.sendMail(
                 hoadon.Email,
                 'Verify mail',
                 `<a href="https://www.facebook.com/">verify</a>`,
@@ -296,7 +296,7 @@ let ThanhToan = async (req, res) => {
         fs.unlink(path.join(directory, pdf.filename), (err) => {
             if (err) throw err;
         });
-        console.log('asdlasdhl');
+        console.log('Gửi mail được!');
         return res.send('Success');
     } catch (error) {
         console.log(error);
