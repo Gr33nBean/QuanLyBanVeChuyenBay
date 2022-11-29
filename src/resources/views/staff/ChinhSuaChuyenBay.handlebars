@@ -55,7 +55,8 @@
                                 type='text'
                                 class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                                 id='SanBayDi'
-                                value='Tân Sơn Nhất'
+                                masanbay=''
+                                value='{{this.Flight_Edit.SanBayDi.TenSanBay}}'
                                 disabled
                             />
                         </div>
@@ -70,7 +71,8 @@
                                 type='text'
                                 class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                                 id='SanBayDen'
-                                value='Nội Bài'
+                                masanbay=''
+                                value='{{this.Flight_Edit.SanBayDen.TenSanBay}}'
                                 disabled
                             />
                         </div>
@@ -86,6 +88,7 @@
                                 class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                                 id='TrangThai'
                                 value='Chưa khởi hành'
+                                giatri=''
                                 disabled
                             />
                         </div>
@@ -182,7 +185,8 @@
                 {{! Điểm dừng container }}
                 <div id='DiemDung_Container' class='px-3'>
 
-                    <div class='DiemDung_Item row mb-3 align-items-center'>
+                    {{! Điểm dừng item }}
+                    <div class='DiemDung_Item row mb-3 align-items-center d-none' index='0'>
 
                         {{! Thứ tự }}
                         <div class='col-1'>
@@ -190,7 +194,9 @@
                             <input
                                 style='height: 36px;'
                                 type='text'
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                class='DiemDung_Item_ThuTu form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary text-center'
+                                value='0'
+                                disabled
                             />
                         </div>
 
@@ -202,67 +208,38 @@
                                 <input
                                     style='height: 36px;'
                                     type='text'
-                                    class='form-control dropdown-toggle custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary form-select'
+                                    class='DiemDung_Item_SanBayDung form-control dropdown-toggle custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary form-select'
                                     data-bs-toggle='dropdown'
                                     aria-expanded='false'
                                     placeholder='Sân bay dừng'
                                     masanbay=''
+                                    index='0'
                                 />
                                 {{! Drop down }}
                                 <ul
                                     style='width: 350px; height: 400px;'
-                                    class='list-unstyled custom-font p14-S dropdown-menu custom-font p20-B shadow py-0 my-1 overflow-auto'
+                                    class='DiemDung_Item_SanBayDung_ul list-unstyled custom-font p14-S dropdown-menu custom-font p20-B shadow py-0 my-1 overflow-auto'
                                 >
-                                    {{! Dropdown header }}
-                                    <li
-                                        class='dropdown-header border border-1 border-top-0 border-end-0 border-start-0'
-                                    >
-                                        <div class='d-flex flex-column'>
-                                            <span
-                                                class='custom-font p12-S text-dark border-tertiary border-tertiary'
-                                            >Thành phố hoặc sân bay phổ biến</span>
-                                        </div>
-                                    </li>
-                                    {{! Dropdown items }}
-                                    <li
-                                        style='height: 48px;'
-                                        class='SanBayDi_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
-                                    >
-                                        <div style='pointer-events:none;' class='d-flex flex-column'>
-                                            <span
-                                                class='SanBayDi_li_TenTinhThanh custom-font p14-S text-dark pb-1'
-                                            ></span>
-                                            <div class='d-flex flex-row'>
 
-                                                <span
-                                                    class='SanBayDi_li_MaSanBay custom-font p14-R text-tertiary me-1'
-                                                ></span>
-                                                <span class='custom-font p14-R text-tertiary me-1'>
-                                                </span>
-                                                <span
-                                                    class='SanBayDi_li_TenSanBay custom-font p14-R text-tertiary'
-                                                ></span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                    {{#each SanBays}}
+                                    {{! Dropdown items }}
+                                    {{#each Flight_Edit.SanBays}}
                                         <li
-                                            class='SanBayDi_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
+                                            class='DiemDung_Item_SanBayDung_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
                                         >
                                             <div style='pointer-events:none;' class='d-flex flex-column'>
                                                 <span
-                                                    class='SanBayDi_li_TenTinhThanh custom-font p14-S text-dark pb-1'
+                                                    class='DiemDung_Item_SanBayDung_li_TinhThanh custom-font p14-S text-dark pb-1'
                                                 >{{this.TinhThanh}}</span>
                                                 <div class='d-flex flex-row'>
 
                                                     <span
-                                                        class='SanBayDi_li_MaSanBay custom-font p14-R text-tertiary me-1'
+                                                        class='DiemDung_Item_SanBayDung_li_MaSanBay custom-font p14-R text-tertiary me-1'
                                                     >{{this.MaSanBay}}</span>
                                                     <span class='custom-font p14-R text-tertiary me-1'>
                                                         - Sân bay
                                                     </span>
                                                     <span
-                                                        class='SanBayDi_li_TenSanBay custom-font p14-R text-tertiary'
+                                                        class='DiemDung_Item_SanBayDung_li_TenSanBay custom-font p14-R text-tertiary'
                                                     >{{this.TenSanBay}}</span>
                                                 </div>
                                             </div>
@@ -278,7 +255,8 @@
                             <input
                                 style='height: 36px;'
                                 type='date'
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                index='0'
+                                class='DiemDung_Item_NgayDen form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
@@ -288,7 +266,8 @@
                             <input
                                 style='height: 36px;'
                                 type='time'
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                index='0'
+                                class='DiemDung_Item_GioDen form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
@@ -298,7 +277,8 @@
                             <input
                                 style='height: 36px;'
                                 type='number'
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                index='0'
+                                class='DiemDung_Item_ThoiGianDung form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
@@ -308,23 +288,26 @@
                             <input
                                 style='height: 36px;'
                                 type='text'
+                                index='0'
                                 placeholder='Ghi chú'
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                class='DiemDung_Item_GhiChu form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
-                        {{! Thùng rác }}
+                        {{! Các nút }}
                         <div class='col-1 px-0 text-center'>
                             <button
                                 style='margin-top:26px;'
-                                class='btn border-0 bg-danger custom-boxshadow-focus-none custom-boxshadow-hover-secondary px-2 py-2'
+                                index='0'
+                                class='DiemDung_Item_Xoa btn border-0 bg-danger custom-boxshadow-focus-none custom-boxshadow-hover-secondary px-2 py-2 d-none'
                             >
                                 <span class='text-light custom-font p14-S'>Xóa</span>
                             </button>
 
                             <button
                                 style='margin-top:26px;'
-                                class='btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-primary d-none p-0'
+                                index='0'
+                                class='DiemDung_Item_Luu btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-primary d-none p-0'
                             >
                                 <i
                                     style='height: 30px; width:30px; font-size:30px;'
@@ -334,7 +317,8 @@
 
                             <button
                                 style='margin-top:26px;'
-                                class='btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-secondary p-0 d-none'
+                                index='0'
+                                class='DiemDung_Item_Huy btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-secondary p-0 d-none'
                             >
                                 <i
                                     style='height: 30px; width:30px; font-size:30px; '
@@ -376,7 +360,7 @@
                 <div id='HangGhe_Container' class='px-3'>
 
                     {{! Hạng ghế item }}
-                    <div class='HangGhe_Item row mb-3 align-items-center'>
+                    <div class='HangGhe_Item row mb-3 align-items-center d-none'>
 
                         {{! Hạng vé }}
                         <div class='col-3'>
@@ -386,24 +370,30 @@
                                 <input
                                     style='height: 36px;'
                                     type='text'
-                                    class='form-control dropdown-toggle custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary form-select'
+                                    class='HangGhe_Item_MaHangVe form-control dropdown-toggle custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary form-select'
                                     data-bs-toggle='dropdown'
                                     aria-expanded='false'
                                     placeholder='Hạng vé'
-                                    masanbay=''
+                                    mahangve=''
                                 />
                                 {{! Drop down }}
                                 <ul
                                     style='width: 350px; height: 400px;'
-                                    class='list-unstyled custom-font p14-S dropdown-menu custom-font p20-B shadow py-0 my-1 overflow-auto'
+                                    class='HangGhe_Item_MaHangVe_ul list-unstyled custom-font p14-S dropdown-menu custom-font p20-B shadow py-0 my-1 overflow-auto'
                                 >
                                     {{! Dropdown items }}
-                                    {{#each SanBays}}
+                                    {{#each Flight_Edit.HangVes}}
                                         <li
-                                            class='SanBayDi_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
+                                            class='HangGhe_Item_MaHangVe_li dropdown-item border border-1 border-top-0 border-end-0 border-start-0 custom-active'
                                         >
                                             <div style='pointer-events:none;' class='d-flex flex-row'>
-
+                                                <span
+                                                    class='HangGhe_Item_MaHangVe_li_Ma custom-font p14-R text-dark me-1'
+                                                >{{this.MaHangGhe}}</span>
+                                                <span class='custom-font p14-S text-dark me-1'> - </span>
+                                                <span
+                                                    class='HangGhe_Item_MaHangVe_li_Ten custom-font p14-R text-dark'
+                                                >{{this.TenHangGhe}}</span>
                                             </div>
                                         </li>
                                     {{/each}}
@@ -419,7 +409,7 @@
                                 type='number'
                                 placeholder='Giá vé'
                                 disabled
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                class='HangGhe_Item_GiaVe form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
@@ -430,7 +420,7 @@
                                 style='height: 36px;'
                                 type='number'
                                 disabled
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                class='HangGhe_Item_VeDaPhatHanh form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
@@ -440,23 +430,23 @@
                             <input
                                 style='height: 36px;'
                                 type='number'
-                                class='form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
+                                class='HangGhe_Item_VeCoSan form-control custom-font p16-S border-tertiary py-1 custom-boxshadow-focus-primary'
                             />
                         </div>
 
-                        {{! Thùng rác / Lưu }}
+                        {{! Sửa / Xóa / Lưu }}
                         <div class='col-1 px-0 text-center'>
 
                             <button
                                 style='margin-top:26px;'
-                                class='btn border-0 bg-danger custom-boxshadow-focus-none custom-boxshadow-hover-secondary px-2 py-2'
+                                class='HangGhe_Item_Xoa btn border-0 bg-danger custom-boxshadow-focus-none custom-boxshadow-hover-secondary px-2 py-2 d-none'
                             >
                                 <span class='text-light custom-font p14-S'>Xóa</span>
                             </button>
 
                             <button
                                 style='margin-top:26px;'
-                                class='btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-primary d-none p-0'
+                                class='HangGhe_Item_Luu btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-primary d-none p-0'
                             >
                                 <i
                                     style='height: 30px; width:30px; font-size:30px;'
@@ -466,7 +456,7 @@
 
                             <button
                                 style='margin-top:26px;'
-                                class='btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-secondary p-0 d-none'
+                                class='HangGhe_Item_Huy btn border-0 custom-boxshadow-focus-none custom-boxshadow-hover-secondary p-0 d-none'
                             >
                                 <i
                                     style='height: 30px; width:30px; font-size:30px; '
@@ -483,7 +473,7 @@
                 {{! Nút thêm }}
                 <div class='d-flex flex-row justify-content-center py-3'>
                     <button
-                        id='ThemDiemDung'
+                        id='ThemHangGhe'
                         type='button'
                         class='btn btn-primary bg-primary border-0 px-5 text-light custom-font p16-S custom-boxshadow-focus-none custom-boxshadow-hover-primary'
                     >
@@ -510,6 +500,8 @@
     </div>
 
 </div>
+
+<div id='Flight_EditJS' Flight_EditJS='{{this.Flight_EditJS}}' class='d-none'></div>
 
 {{! Our js }}
 <script type='module' src='/javascript/staff/ChinhSuaChuyenBay.js'>

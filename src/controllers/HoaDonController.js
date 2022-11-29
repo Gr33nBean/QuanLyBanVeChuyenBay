@@ -1,9 +1,9 @@
 import db from '../models/index';
 const { QueryTypes, where } = require('sequelize');
 import Mailer from '../utils/mailer';
-import pdfController from './pdfController';
 const fs = require('fs');
 const path = require('path');
+import pdfController from './pdfController';
 
 //#region Tao ve
 // thongtintaove
@@ -281,22 +281,43 @@ let ThanhToan = async (req, res) => {
         });
         await hoadon.save();
 
-        let pdf = await pdfController.generateHoaDonPdf();
+        // SELECT DISTINCT chitiethangve.MaHangGhe  from hoadon, ve, chitiethangve WHERE hoadon.MaHoaDon = 6 AND hoadon.MaHoaDon = ve.MaHoaDon AND ve.MaCTVe = chitiethangve.MaCTVe
+
+        let MaHangGhe = await db.sequelize.query(
+            'SELECT DISTINCT chitiethangve.MaHangGhe  from hoadon, ve, chitiethangve WHERE hoadon.MaHoaDon = :mahoadon AND hoadon.MaHoaDon = ve.MaHoaDon AND ve.MaCTVe = chitiethangve.MaCTVe',
+            {
+                replacements: {
+                    mahoadon: hoadon.MaHoaDon,
+                },
+                type: QueryTypes.SELECT,
+                raw: true,
+            },
+        );
+
+        let pdf = await pdfController.generatePdf(hoadon.MaHoaDon, data_req.PackageBooking);
+
         if (pdf.status === 'ok') {
-            await Mailer.sendMail(
+            await Mailer.sendMailWithAttach(
                 hoadon.Email,
-                'Verify mail',
-                `<a href="https://www.facebook.com/">verify</a>`,
+                `[Planet] Your E-ticket - Booking ID [${MaHangGhe[0].MaHangGhe}-${hoadon.MaHoaDon}]`,
+                `<p>Cám ơn bạn đã lựa chọn Planet!</p>`,
                 pdf.filename,
             );
-        } else return res.send('Fail');
+        } else {
+            return res.send('Fail');
+        }
 
         let directory = path.join(__dirname, '../public/temp');
 
-        fs.unlink(path.join(directory, pdf.filename), (err) => {
+        fs.readdir(directory, (err, files) => {
             if (err) throw err;
+
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), (err) => {
+                    if (err) throw err;
+                });
+            }
         });
-        console.log('Gửi mail được!');
         return res.send('Success');
     } catch (error) {
         console.log(error);
