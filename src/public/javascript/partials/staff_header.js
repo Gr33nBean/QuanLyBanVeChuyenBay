@@ -31,12 +31,6 @@ document.addEventListener('DOMContentLoaded', (e) => {
     });
     P;
 });
-LoGo.addEventListener('click', (e) => {
-    //document.getElementById('packagebooking').value = JSON.stringify(_PackageBooking);
-    var staff_form = document.forms['staffheader-form'];
-    staff_form.action = '/staff';
-    staff_form.submit();
-});
 Profile.addEventListener('click', (e) => {
     //document.getElementById('packagebooking').value = JSON.stringify(_PackageBooking);
     var staff_form = document.forms['staffheader-form'];
@@ -48,6 +42,13 @@ TraCuu.addEventListener('click', (e) => {
     //document.getElementById('packagebooking').value = JSON.stringify(_PackageBooking);
     var staff_form = document.forms['staffheader-form'];
     staff_form.action = '/staff';
+    staff_form.submit();
+});
+
+DoanhThu.addEventListener('click', (e) => {
+    //document.getElementById('packagebooking').value = JSON.stringify(_PackageBooking);
+    var staff_form = document.forms['staffheader-form'];
+    staff_form.action = '/staff/baocao';
     staff_form.submit();
 });
 
