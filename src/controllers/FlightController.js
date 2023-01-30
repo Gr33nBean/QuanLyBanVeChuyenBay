@@ -872,7 +872,7 @@ let filterFlight = async (req, res) => {
 // var data_send = {
 //     MaChuyenBay: 1,
 //     NgayKhoiHanh: { Ngay: 31, Thang: 12, Nam: 2022 },
-//     GioKhoiHanh: { Gio: 6, Phut: 30 },
+//     GioKhoiHanh: { Gio: 7, Phut: 30 },
 //     ThoiGianBay: 180,
 //     GiaVeCoBan: 500000,
 //     TrangThai: 'ChuaKhoiHanh',
@@ -897,38 +897,35 @@ let filterFlight = async (req, res) => {
 //             ThoiGianDung: 15,
 //             GhiChu: '',
 //         },
-//         {
-//             ThuTu: 3,
-//             MaSanBay: 'PXU',
-//             NgayDen: { Ngay: 31, Thang: 12, Nam: 2022 },
-//             GioDen: { Gio: 8, Phut: 10 },
-//             ThoiGianDung: 15,
-//             GhiChu: '',
-//         },
 //     ],
 //     HangVe: [
 //         {
 //             MaHangGhe: 'Deluxe',
-//             TongVe: 20,
+//             TongVe: 50,
 //         },
 //     ],
 // };
 
 let updateChuyenBay = async (req, res) => {
     try {
+        const date = new Date();
+        const offset = date.getTimezoneOffset() / 60;
+
         const chuyenbay = await db.ChuyenBay.findOne({
             where: {
                 MaChuyenBay: req.body.MaChuyenBay,
             },
         });
 
-        chuyenbay.NgayKhoiHanh = new Date(
+        let ngaygio = new Date(
             req.body.NgayKhoiHanh.Nam,
-            req.body.NgayKhoiHanh.Thang,
+            req.body.NgayKhoiHanh.Thang - 1,
             req.body.NgayKhoiHanh.Ngay,
-            req.body.GioKhoiHanh.Gio,
+            req.body.GioKhoiHanh.Gio - offset,
             req.body.GioKhoiHanh.Phut,
         );
+
+        chuyenbay.NgayGio = ngaygio;
         chuyenbay.ThoiGianBay = req.body.ThoiGianBay;
         chuyenbay.GiaVeCoBan = req.body.GiaVeCoBan;
         chuyenbay.TrangThai = req.body.TrangThai;
@@ -938,16 +935,19 @@ let updateChuyenBay = async (req, res) => {
         chuyenbay.GiaVeCoBan_Min = req.body.GiaVeCoBan_Min;
         await chuyenbay.save();
 
+        let trunggian = await db.ChiTietChuyenBay.findAll({
+            where: {
+                MaChuyenBay: req.body.MaChuyenBay,
+            },
+            order: [['ThuTu', 'ASC']],
+        });
+
         for (var i in req.body.SBTG) {
-            let trunggian = await db.ChiTietChuyenBay.findOne({
-                where: {
-                    MaChuyenBay: req.body.MaChuyenBay,
-                    MaSBTG: req.body.SBTG[i].MaSanBay,
-                    ThuTu: req.body.SBTG[i].ThuTu,
-                },
+            let temp = -1;
+            let sbtg = trunggian.find((element, index) => {
+                return element.ThuTu === req.body.SBTG[i].ThuTu;
             });
-            const date = new Date();
-            const offset = date.getTimezoneOffset() / 60;
+            temp = trunggian.findIndex((element) => element === sbtg);
 
             let ngaygio = new Date(
                 req.body.SBTG[i].NgayDen.Nam,
@@ -957,13 +957,13 @@ let updateChuyenBay = async (req, res) => {
                 req.body.SBTG[i].GioDen.Phut,
             );
 
-            if (trunggian) {
-                trunggian.ThuTu = req.body.SBTG[i].ThuTu;
-                trunggian.NgayGioDen = ngaygio;
-                trunggian.ThoiGianDung = req.body.SBTG[i].ThoiGianDung;
-                trunggian.GhiChu = req.body.SBTG[i].GhiChu;
-                console.log('chay 1');
-                trunggian.save();
+            if (sbtg) {
+                sbtg.ThuTu = req.body.SBTG[i].ThuTu;
+                sbtg.MaSBTG = req.body.SBTG[i].MaSanBay;
+                sbtg.NgayGioDen = ngaygio;
+                sbtg.ThoiGianDung = req.body.SBTG[i].ThoiGianDung;
+                sbtg.GhiChu = req.body.SBTG[i].GhiChu;
+                await sbtg.save();
             } else {
                 let trunggian = await db.ChiTietChuyenBay.create({
                     MaChuyenBay: req.body.MaChuyenBay,
@@ -973,9 +973,19 @@ let updateChuyenBay = async (req, res) => {
                     ThoiGianDung: req.body.SBTG[i].ThoiGianDung,
                     GhiChu: req.body.SBTG[i].GhiChu,
                 });
-                console.log('chay 2');
-                trunggian.save();
+                await trunggian.save();
             }
+
+            trunggian.splice(temp, 1);
+        }
+
+        for (var i in trunggian) {
+            await db.ChiTietChuyenBay.destroy({
+                where: {
+                    MaChuyenBay: req.body.MaChuyenBay,
+                    ThuTu: trunggian[i].ThuTu,
+                },
+            });
         }
 
         for (var i in req.body.HangVe) {
@@ -986,24 +996,43 @@ let updateChuyenBay = async (req, res) => {
                 },
             });
 
-            if (!hangghe) {
+            if (hangghe) {
                 hangghe.TongVe = req.body.HangVe[i].TongVe;
                 await hangghe.save();
             } else {
                 let hangghe = await db.ChiTietHangVe.create({
                     MaChuyenBay: req.body.MaChuyenBay,
                     MaHangGhe: req.body.HangVe[i].MaHangGhe,
-                    TongGhe: req.body.HangVe[i].TongVe,
+                    TongVe: req.body.HangVe[i].TongVe,
                     VeDaBan: 0,
                 });
                 await hangghe.save();
             }
         }
 
-        return res.send('success');
+        return res.send('true');
     } catch (error) {
         console.log(error);
-        return res.send('fail');
+        return res.send('false');
+    }
+};
+//#endregion
+
+//#region
+// let data_send = { MaChuyenBay: -1 };
+let CancelChuyenBay = async (req, res) => {
+    try {
+        let chuyenbay = await db.ChuyenBay.findOne({
+            where: {
+                MaChuyenBay: req.body.MaChuyenBay,
+            },
+        });
+        chuyenbay.TrangThai = 'DaHuy';
+        await chuyenbay.save();
+        return res.send('true');
+    } catch (error) {
+        console.log(error);
+        return res.send('false');
     }
 };
 //#endregion
@@ -1065,4 +1094,5 @@ module.exports = {
     filterFlight: filterFlight,
     getFlight: getFlight,
     updateChuyenBay: updateChuyenBay,
+    CancelChuyenBay: CancelChuyenBay,
 };
