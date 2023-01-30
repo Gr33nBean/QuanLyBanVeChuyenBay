@@ -13,7 +13,9 @@ import {
 } from '../start.js';
 
 ActiveNavItem_Header('PhanQuyen');
-
+if (footer_planet) {
+    footer_planet.parentElement.removeChild(footer_planet);
+}
 openLoader('Chờ chút');
 closeLoader();
 
@@ -32,6 +34,10 @@ function LoadGioiTinh() {
             let dele = ChucVus[i].querySelector('.button');
             let de = ChucVus[i].querySelector('.ChucVu--Sua');
             dele.removeChild(de);
+            if (ChucVus[i].querySelector('.ChucVu_Ten').innerText == 'Khách hàng') {
+                let de = ChucVus[i].querySelector('.User--Them');
+                dele.removeChild(de);
+            }
         }
     }
 }

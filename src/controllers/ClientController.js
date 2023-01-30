@@ -26,12 +26,9 @@ class ClientController {
                     res.clearCookie('MaUser');
                 }
             }
-            //let SanBays = [
-            //     { MaSanBay: 'TSN', TenSanBay: 'Tân Sơn Nhất', TinhThanh: 'HCM' },
-            //     { MaSanBay: 'DAD', TenSanBay: 'Haha', TinhThanh: 'Đà Nẵng' },
-            // ];
+
             let SanBays = await db.sequelize.query(
-                'select MaSanBay , TenSanBay, TenTinhThanh as TinhThanh from sanbay, tinhthanh where sanbay.matinhthanh = tinhthanh.matinhthanh',
+                `select MaSanBay , TenSanBay, TenTinhThanh from sanbay, tinhthanh where sanbay.matinhthanh = tinhthanh.matinhthanh and sanbay.trangthai ='HoatDong'`,
                 {
                     type: QueryTypes.SELECT,
                     raw: true,
@@ -43,38 +40,49 @@ class ClientController {
             let HangGhes = await db.HangGhe.findAll({
                 attributes: ['MaHangGhe', 'TenHangGhe'],
                 where: {
-                    TrangThai: 'apdung',
+                    TrangThai: 'ApDung',
                 },
                 raw: true,
                 logging: false,
             });
 
-            //get so hanh khach toi da 1 chuyen bay
-            let HanhKhach_Max = await db.ThamSo.findOne({
-                attributes: ['GiaTri'],
-                where: {
-                    TenThamSo: 'HanhKhach_Max',
-                },
-                logging: false,
+            let ThamSos = await db.sequelize.query(`select * from thamso `, {
+                type: QueryTypes.SELECT,
+                raw: true,
             });
-            HanhKhach_Max = HanhKhach_Max.GiaTri;
+
+            //get so hanh khach toi da 1 chuyen bay
+            // let HanhKhach_Max = await db.ThamSo.findOne({
+            //     attributes: ['GiaTri'],
+            //     where: {
+            //         TenThamSo: 'HanhKhach_Max',
+            //     },
+            //     logging: false,
+            // });
+            // HanhKhach_Max = HanhKhach_Max.GiaTri;
 
             //get so so chuyen bay toi da 1 lan dat ve
-            let ChuyenBay_Max = await db.ThamSo.findOne({
-                attributes: ['GiaTri'],
-                where: {
-                    TenThamSo: 'ChuyenBay_Max',
-                },
+            // let ChuyenBay_Max = await db.ThamSo.findOne({
+            //     attributes: ['GiaTri'],
+            //     where: {
+            //         TenThamSo: 'ChuyenBay_Max',
+            //     },
+            //     logging: false,
+            // });
+            // ChuyenBay_Max = ChuyenBay_Max.GiaTri;
+
+            let LoaiKhachHang = await db.sequelize.query('SELECT * FROM `loaikhachhang`', {
+                type: QueryTypes.SELECT,
+                raw: true,
                 logging: false,
             });
-            ChuyenBay_Max = ChuyenBay_Max.GiaTri;
+
+            var Package = { SanBays: SanBays, HangGhes: HangGhes, ThamSos: ThamSos, LoaiKhachHang: LoaiKhachHang };
 
             return res.render('client/TraCuuChuyenBay', {
                 layout: 'client.handlebars',
-                SanBays: SanBays,
-                HangGhes: HangGhes,
-                HanhKhach_Max: HanhKhach_Max,
-                ChuyenBay_Max: ChuyenBay_Max,
+                Package: Package,
+                PackageJS: JSON.stringify(Package),
             });
         } catch (error) {
             console.log(error);
@@ -115,7 +123,7 @@ class ClientController {
             let HoaDons = await db.sequelize.query(
                 "select hoadon.MaHoaDon, hoadon.MaUser, hoadon.HoTen, hoadon.Email, hoadon.SDT, hoadon.NgayGioThanhToan, hoadon.TongTien, htthanhtoan.Ten from hoadon, htthanhtoan where hoadon.MaHTTT=htthanhtoan.MaHTTT and hoadon.MaUser = '" +
                     req.signedCookies.MaUser +
-                    "' ",
+                    "' and hoadon.TrangThai='DaThanhToan'",
                 {
                     type: QueryTypes.SELECT,
                     raw: true,
@@ -149,6 +157,7 @@ class ClientController {
                         raw: true,
                     },
                 );
+                let MaGhe;
                 for (let j = 0; j < Ves.length; j++) {
                     Ves[j].GiaVe = numberWithDot(Ves[j].GiaVe) + ' VND';
                     Ves[j].GioiTinh = Ves[j].GioiTinh == 1 ? 'Nam' : 'Nữ';
@@ -168,9 +177,9 @@ class ClientController {
                     Ves[j].MaChuyenBayCT = CTVE[0].MaChuyenBay;
                     Ves[j].HangVe = CTVE[0].MaHangGhe + '-' + CTVE[0].TenHangGhe;
                     Ves[j].MaVe = Ves[j].MaChuyenBay + Ves[j].MaVe;
+                    MaGhe = CTVE[0].MaHangGhe;
                 }
-                console.log(Ves);
-                HoaDons[i].MaHoaDon = HoaDons[i].MaUser + '-' + HoaDons[i].MaHoaDon;
+                HoaDons[i].MaHoaDon = HoaDons[i].MaUser + '-' + HoaDons[i].MaHoaDon + '-' + MaGhe;
                 HoaDons[i].Ves = structuredClone(Ves);
             }
             return res.render('client/VeCuaToi', {
@@ -207,8 +216,8 @@ class ClientController {
                 raw: true,
             });
             ChiTietChuyenBay.sort((a, b) => {
-                if (a.ThuTu < a.ThuTu) return 1;
-                else return -1;
+                if (a.ThuTu < b.ThuTu) return -1;
+                else return 1;
             });
             console.log(ChiTietChuyenBay);
             for (let i = 0; i < ChiTietChuyenBay.length; i++) {
@@ -435,11 +444,10 @@ class ClientController {
     async payment(req, res) {
         try {
             let PackageBooking_ = JSON.parse(req.body.PackageBooking);
-            // Trí
             // let HoaDon = await HoaDonController.CreateHoaDon(PackageBooking_.HoaDon);
             return res.render('client/ThanhToan', {
                 layout: 'client.handlebars',
-                //HoaDon: JSON.stringify(HoaDon),
+                // HoaDon: JSON.stringify(HoaDon),
                 PackageBookingJS: JSON.stringify(PackageBooking_),
             });
         } catch (error) {
