@@ -3,7 +3,6 @@ const router = express.Router();
 
 const BaoCaoController = require('../controllers/BaoCaoController');
 
-router.post('/GetReports', BaoCaoController.DoanhThuNam);
-router.post('/', BaoCaoController.index);
+router.post('/get', BaoCaoController.DoanhThuNam);
 
 module.exports = router;
