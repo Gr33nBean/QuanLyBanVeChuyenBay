@@ -55,12 +55,15 @@ class StaffController {
             );
 
             let HangGhes = await db.sequelize.query(
-                `select MaHangGhe , TenHangGhe from hangghe where hangghe.TrangThai = 'apdung' `,
+                `select MaHangGhe , TenHangGhe, HeSo from hangghe where hangghe.TrangThai = 'apdung' `,
                 {
                     type: QueryTypes.SELECT,
                     raw: true,
                 },
             );
+            HangGhes.map((item) => {
+                item.HeSo = parseFloat(item.HeSo);
+            });
 
             let Flight_Edit = JSON.parse(req.body.Flight_Edit);
             Flight_Edit['SanBays'] = structuredClone(SanBays);
@@ -79,7 +82,7 @@ class StaffController {
     // 'staff/QuyDinh'
     async Regulations(req, res) {
         try {
-            let ThamSos = await db.sequelize.query('select TenThamSo , GiaTri from thamso', {
+            let ThamSos = await db.sequelize.query('select TenThamSo, TenHIenThi, NgayHieuLuc , GiaTri from thamso', {
                 type: QueryTypes.SELECT,
                 raw: true,
             });
@@ -127,7 +130,7 @@ class StaffController {
     async LoadRegulation(req, res) {
         try {
             let Package = {};
-            let ThamSos = await db.sequelize.query('select TenThamSo , GiaTri from thamso', {
+            let ThamSos = await db.sequelize.query('select TenThamSo, TenHIenThi, NgayHieuLuc , GiaTri from thamso', {
                 type: QueryTypes.SELECT,
                 raw: true,
             });
@@ -341,7 +344,6 @@ class StaffController {
             console.log(error);
         }
     }
-
 }
 
 module.exports = new StaffController();
