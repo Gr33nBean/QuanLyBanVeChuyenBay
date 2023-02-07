@@ -1845,7 +1845,11 @@ function KhoiTao_ModalChinhSua() {
 
         // Ngày đến
         node.querySelector('.DiemDungViPham_Item_NgayDen').value =
-            item.ThoiGianDen.NgayDen.Nam + '-' + item.ThoiGianDen.NgayDen.Thang + '-' + item.ThoiGianDen.NgayDen.Ngay;
+            item.ThoiGianDen.NgayDen.Nam +
+            '-' +
+            numberSmallerTen(item.ThoiGianDen.NgayDen.Thang) +
+            '-' +
+            numberSmallerTen(item.ThoiGianDen.NgayDen.Ngay);
         node.querySelector('.DiemDungViPham_Item_NgayDen').addEventListener('change', (e) => {
             var index = parseInt(e.target.getAttribute('index'));
             if (e.target.value != '') {
