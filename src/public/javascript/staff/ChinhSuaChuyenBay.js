@@ -1329,7 +1329,11 @@ function ThemSBTG(SBTG = null) {
         node.querySelector('.DiemDung_Item_SanBayDung').setAttribute('value', SBTG.TenSanBay);
         node.querySelector('.DiemDung_Item_SanBayDung').setAttribute('masanbay', SBTG.MaSBTG);
         node.querySelector('.DiemDung_Item_NgayDen').value =
-            SBTG.ThoiGianDen.NgayDen.Nam + '-' + SBTG.ThoiGianDen.NgayDen.Thang + '-' + SBTG.ThoiGianDen.NgayDen.Ngay;
+            SBTG.ThoiGianDen.NgayDen.Nam +
+            '-' +
+            numberSmallerTen(SBTG.ThoiGianDen.NgayDen.Thang) +
+            '-' +
+            numberSmallerTen(SBTG.ThoiGianDen.NgayDen.Ngay);
         node.querySelector('.DiemDung_Item_GioDen').value =
             numberSmallerTen(SBTG.ThoiGianDen.GioDen.Gio) + ':' + numberSmallerTen(SBTG.ThoiGianDen.GioDen.Phut);
         node.querySelector('.DiemDung_Item_ThoiGianDung').value = SBTG.ThoiGianDung;
