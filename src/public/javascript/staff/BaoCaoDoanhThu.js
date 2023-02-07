@@ -105,11 +105,10 @@ function AddEventToElements() {
                 Year: year,
                 NgayXuat: today,
             },
-        }).then((res) => {
-            axios({
-                method: 'get',
-                url: `/download?year=${year}`,
-            });
+        }).then(async (res) => {
+            const link = document.createElement('a');
+            link.href = `/staff/baocao/downloadReport?year=${year}`;
+            link.click();
             closeLoader();
         });
     });

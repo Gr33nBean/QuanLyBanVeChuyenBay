@@ -307,6 +307,19 @@ class BaoCaoController {
             return res.send('Error');
         }
     }
+
+    // GET
+    // "/downloadReport"
+    async downloadReport(req, res) {
+        try {
+            const year = req.query.year;
+            const file = `./src/public/temp/report-${year}.pdf`;
+            var fileName = 'Report ' + year + '.pdf';
+            return res.download(file, fileName);
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
 
 module.exports = new BaoCaoController();

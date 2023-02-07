@@ -7,6 +7,7 @@ router.post('/GetReports', BaoCaoController.DoanhThuNam);
 router.post('/PrintReport', BaoCaoController.PrintReport);
 router.post('/GetBills', BaoCaoController.HoaDonTheoChuyenBay);
 router.get('/ReportTemplate', BaoCaoController.ReportTemplate);
+router.get('/downloadReport', BaoCaoController.downloadReport);
 router.post('/', BaoCaoController.index);
 
 module.exports = router;
