@@ -162,7 +162,7 @@ let generatePdf = async (MaHoaDon, PackageBooking, MaHTTT) => {
     // SELECT  chitiethangve.MaChuyenBay, mochanhly.SoKgToiDa FROM `hoadon`, ve, mochanhly , chitiethangve WHERE hoadon.MaHoaDon = ve.MaHoaDon AND ve.MaMocHanhLy = mochanhly.MaMocHanhLy AND ve.MaCTVe = chitiethangve.MaCTVe AND chitiethangve.MaChuyenBay = 1 AND hoadon.MaHoaDon = 46 GROUP BY chitiethangve.MaChuyenBay
 
     let date = new Date();
-    const filename = `[${date.toDateString()}].[${MaHoaDon}-${data.HangGhe.MaHangGhe}].pdf`;
+    const filename = `[${date.toDateString()}].[${PackageBooking.HoaDon.MaHoaDon}].pdf`;
     await getTemplateHtml()
         .then(async (call) => {
             // Now we have the html code of our template in res object

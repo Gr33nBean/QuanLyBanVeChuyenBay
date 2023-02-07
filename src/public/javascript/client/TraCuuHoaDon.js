@@ -34,15 +34,32 @@ function start() {
         var value = HoaDon_input.value;
         if (value == '') {
             showToast({ header: 'Mã hóa đơn', body: 'Mã hóa đơn còn trống!', duration: 5000, type: 'warning' });
+            Invoice_decor.classList.remove('d-none');
+            Yes_Invoice.classList.add('d-none');
+            No_Invoice.classList.add('d-none');
             return;
         }
-        if (value.includes('-') == false || value.split('-')[0] == '' || value.split('-')[1] == '') {
+        if (
+            value.includes('-') == false ||
+            value.split('-').length != 3 ||
+            value.split('-')[0] == '' ||
+            value.split('-')[1] == '' ||
+            value.split('-')[2] == ''
+        ) {
             showToast({ header: 'Mã hóa đơn', body: 'Mã hóa đơn không tồn tại!', duration: 5000, type: 'warning' });
+            Invoice_decor.classList.remove('d-none');
+            Yes_Invoice.classList.add('d-none');
+            No_Invoice.classList.add('d-none');
             return;
         }
-        var mahoadon = value.split('-')[0];
+        var mauser = value.split('-')[0];
+        var mahoadon = value.split('-')[1];
+        var mahangghe = value.split('-')[2];
         if (isNumeric(mahoadon) == false) {
             showToast({ header: 'Mã hóa đơn', body: 'Mã hóa đơn không tồn tại!', duration: 5000, type: 'warning' });
+            Invoice_decor.classList.remove('d-none');
+            Yes_Invoice.classList.add('d-none');
+            No_Invoice.classList.add('d-none');
             return;
         }
         mahoadon = parseInt(mahoadon);
@@ -50,7 +67,7 @@ function start() {
         await axios({
             method: 'post',
             url: '/hoadon/TraCuuHoaDon',
-            data: { MaHoaDon: mahoadon, MaHangGhe: value.split('-')[1] },
+            data: { MaUser: mauser, MaHoaDon: mahoadon, MaHangGhe: mahangghe },
         }).then(async (res) => {
             if (res.data == false) {
                 Invoice = false;

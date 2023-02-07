@@ -356,6 +356,10 @@ let ThanhToan = async (MaHoaDon, MaHTTT, NgayGioThanhToan, MaUser) => {
 
         // Gửi PDF
 
+        if (MaUser == null) {
+            MaUser = 'GUEST';
+        }
+
         let MaHangGhe = await db.sequelize.query(
             'SELECT DISTINCT chitiethangve.MaHangGhe  from hoadon, ve, chitiethangve WHERE hoadon.MaHoaDon = :mahoadon AND hoadon.MaHoaDon = ve.MaHoaDon AND ve.MaCTVe = chitiethangve.MaCTVe',
             {
@@ -370,7 +374,7 @@ let ThanhToan = async (MaHoaDon, MaHTTT, NgayGioThanhToan, MaUser) => {
         let PackageBooking = {};
 
         PackageBooking.HoaDon = {};
-        PackageBooking.HoaDon.MaHoaDon = hoadon.MaHoaDon + '-' + MaHangGhe[0].MaHangGhe;
+        PackageBooking.HoaDon.MaHoaDon = MaUser + '-' + hoadon.MaHoaDon + '-' + MaHangGhe[0].MaHangGhe;
 
         const date = new Date();
         const offset = date.getTimezoneOffset() / 60;
@@ -453,7 +457,7 @@ let ThanhToan = async (MaHoaDon, MaHTTT, NgayGioThanhToan, MaUser) => {
         if (pdf.status === 'ok') {
             await Mailer.sendMailWithAttach(
                 hoadon.Email,
-                `[Planet] Your E-invoice - Invoice ID [${hoadon.MaHoaDon}-${MaHangGhe[0].MaHangGhe}]`,
+                `[Planet] Your E-invoice - Invoice ID [${PackageBooking.HoaDon.MaHoaDon}]`,
                 `<p>Cám ơn bạn đã lựa chọn Planet!</p>`,
                 pdf.filename,
             );
@@ -617,6 +621,7 @@ let XoaCookieMaHangVe = async (req, res) => {
 
 let TraCuuHoaDon = async (req, res) => {
     let req_body = { ...req.body };
+
     var mahoadon = req_body.MaHoaDon;
 
     let hoadon = await db.HoaDon.findOne({
@@ -627,6 +632,22 @@ let TraCuuHoaDon = async (req, res) => {
 
     if (!hoadon) {
         return res.send(false);
+    }
+
+    if (hoadon.TrangThai != 'DaThanhToan') {
+        return res.send(false);
+    }
+
+    var mauser = req_body.MaUser;
+
+    if (hoadon.MaUser == null) {
+        if (mauser != 'GUEST') {
+            return res.send(false);
+        }
+    } else {
+        if (hoadon.MaUser != mauser) {
+            return res.send(false);
+        }
     }
 
     var MaHangGhe = await db.sequelize.query(
@@ -664,7 +685,8 @@ let TraCuuHoaDon = async (req, res) => {
 
     var res_data = {
         MaHoaDon: mahoadon,
-        MaHoaDonHienThi: mahoadon + '-' + mahangghe,
+        MaUser: mauser,
+        MaHoaDonHienThi: mauser + '-' + mahoadon + '-' + mahangghe,
         HangVe: {
             MaHangVe: hangve.MaHangGhe,
             TenHangVe: hangve.TenHangGhe,
