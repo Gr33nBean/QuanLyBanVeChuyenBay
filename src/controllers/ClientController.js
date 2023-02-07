@@ -187,7 +187,7 @@ class ClientController {
                     Ves[j].MaChuyenBay = CTVE[0].MaSanBayDi + '-' + CTVE[0].MaSanBayDen + '-' + CTVE[0].MaChuyenBay;
                     Ves[j].MaChuyenBayCT = CTVE[0].MaChuyenBay;
                     Ves[j].HangVe = CTVE[0].MaHangGhe + '-' + CTVE[0].TenHangGhe;
-                    Ves[j].MaVe = Ves[j].MaChuyenBay + Ves[j].MaVe;
+                    Ves[j].MaVe = Ves[j].MaChuyenBay + '-' + Ves[j].MaVe;
                     MaGhe = CTVE[0].MaHangGhe;
                 }
                 HoaDons[i].MaHoaDon = HoaDons[i].MaUser + '-' + HoaDons[i].MaHoaDon + '-' + MaGhe;
